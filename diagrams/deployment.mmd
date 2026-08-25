@@ -1,0 +1,43 @@
+graph TD
+    subgraph Host_Virtual ["Host VM (GitHub Codespaces - Azure) | CPU: 2 Cores | RAM: 7.8GiB | Swap: 0B"]
+        subgraph Filesystem_Local ["Filesystem (Montado em /workspaces)"]
+            Raw_Dir["Diretório /data/raw (Permissões: chmod 700 - Apenas Processo Ingestor)"]
+            Proc_Dir["Diretório /data/processed (Permissões: chmod 755 - Leitura Geral)"]
+            Log_Dir["Diretório /var/log/pipeline (Logs de Ingestão, Batch e Erros)"]
+        end
+
+        subgraph Container_Orquestrador ["Container Docker - Agendamento (Cron / Daemon)"]
+            Scheduler["Processo do Agendador (Daemon de Orquestração)"]
+        end
+
+        subgraph Container_Ingestor ["Container Docker - Ingestão"]
+            Coletor_Proc["Processo Ingestor (Coleta de APIs/Fontes)"]
+        end
+
+        subgraph Container_Batch ["Container Docker - Processamento Batch"]
+            Batch_Proc["Processo ETL (Batch: Spark/Python)"]
+            OOM_Alert["Monitor de Memória (Alerta OOM Killer devido a 7.8GiB RAM/0B Swap)"]
+        end
+
+        subgraph Container_DW ["Container Docker - Data Warehouse (BI)"]
+            DW_Proc["Processo do Banco de Dados (ex: ClickHouse/Postgres)"]
+        end
+
+        %% Fluxos de Ativação (Agendamento e Reprocessamento)
+        Scheduler -->|1. Dispara Execução/Reprocessamento| Coletor_Proc
+        Scheduler -->|3. Dispara Processamento em Lote| Batch_Proc
+
+        %% Fluxos de Dados e Sockets/Filesystem
+        Coletor_Proc -->|Sockets TCP/IP| Internet_APIs["Fontes de Dados Externas (Internet)"]
+        Coletor_Proc -->|2. Grava Dados Brutos (I/O)| Raw_Dir
+        
+        Batch_Proc -->|4. Lê Dados Brutos (I/O)| Raw_Dir
+        Batch_Proc -->|5. Grava Dados Estruturados (I/O)| Proc_Dir
+        
+        DW_Proc -->|6. Lê Dados Estruturados (I/O)| Proc_Dir
+
+        %% Logs e Observabilidade
+        Coletor_Proc -.->|Escreve Logs| Log_Dir
+        Batch_Proc -.->|Escreve Logs| Log_Dir
+        Batch_Proc -.->|Monitora Consumo RAM| OOM_Alert
+    end
