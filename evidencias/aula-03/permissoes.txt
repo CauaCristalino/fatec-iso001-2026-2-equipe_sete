@@ -1,0 +1,7 @@
+=== CRIANDO ARQUIVO DE TESTE ===
+-rw-rw-rw- 1 codespace codespace 26 Aug 25 23:17 arquivo_teste.txt
+=== REMOVENDO PERMISSOES DE LEITURA/ESCRITA ===
+---------- 1 codespace codespace 26 Aug 25 23:17 arquivo_teste.txt
+=== TENTANDO ACESSAR O ARQUIVO ===
+cat: arquivo_teste.txt: Permission denied
+=== RESTAURANDO PERMISSOES PARA LIMPEZA ===
