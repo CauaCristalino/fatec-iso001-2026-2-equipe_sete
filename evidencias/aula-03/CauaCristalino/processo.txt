@@ -1,0 +1,4 @@
+=== PID / PPID / ESTADO ===
+    PID    PPID STAT  NI COMMAND
+  12334    8205 S      0 sleep
+=== /proc/12334/status ===

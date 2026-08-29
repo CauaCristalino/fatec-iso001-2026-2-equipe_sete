@@ -1,0 +1,4 @@
+]633;E;echo "=== PERMISSOES ===";2d267a7d-9921-40dc-a825-5b9cf3257925]633;C=== PERMISSOES ===
+---------- 1 codespace codespace 32 Aug 29 13:23 laboratorio/CauaCristalino/segredo.txt
+=== TENTATIVA DE LEITURA ===
+cat: laboratorio/CauaCristalino/segredo.txt: Permission denied
