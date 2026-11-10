@@ -1,0 +1,10 @@
+flowchart LR
+    API[API Externa / Origem] --> ING[Script: ingest.py]
+    
+    subgraph H[Computador Local / VM]
+        ING --> CSV[(Arquivo CSV / SQLite)]
+        TRF[Script: transform.py] --> CSV
+        CSV --> DASH[App Didático: Streamlit/Flask]
+    end
+
+    DASH --> USER[Usuário / Aluno]
