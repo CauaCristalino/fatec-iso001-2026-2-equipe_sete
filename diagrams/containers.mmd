@@ -1,0 +1,31 @@
+flowchart TB
+    subgraph GH[GitHub]
+        CRON[Agendador cron]
+        subgraph RUN[Runner efêmero]
+            EX[extract.py]
+            TR[transform.py]
+            LD[load.py]
+            MAIN[main.py orquestrador]
+        end
+        ART[(Artefatos)]
+        MOD[GitHub Models: Llama]
+    end
+
+    subgraph AIVEN[Aiven]
+        DB[(MySQL: clima_diario)]
+    end
+
+    subgraph LOCAL[Máquina do usuário]
+        AG[agent.py]
+        RT[retrieval.py]
+    end
+
+    API[Open-Meteo API]
+
+    CRON --> MAIN
+    MAIN --> EX --> TR --> LD
+    EX -->|HTTPS| API
+    LD -->|TCP + TLS| DB
+    RUN -->|JSON e logs| ART
+    AG --> RT -->|SELECT| DB
+    AG -->|HTTPS| MOD
