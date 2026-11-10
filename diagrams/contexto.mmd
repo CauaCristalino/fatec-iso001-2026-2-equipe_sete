@@ -1,0 +1,25 @@
+flowchart LR
+    SUP([Supervisor de operação])
+    BI([Analista de BI])
+    OPS([Operador / Tech Lead])
+
+    subgraph SOL[Pipeline Clima Diário - fronteira da solução]
+        PIPE[Pipeline ETL diário]
+        AG[Agente RAG no terminal]
+        DB[(Banco clima)]
+    end
+
+    API[Open-Meteo API]
+    GHA[GitHub Actions]
+    GHM[GitHub Models - Llama]
+    AIV[Aiven - MySQL gerenciado]
+
+    GHA -->|agenda e executa| PIPE
+    API -->|dados de clima| PIPE
+    PIPE -->|grava| DB
+    DB -.hospedado em.- AIV
+    SUP -->|pergunta| AG
+    AG -->|consulta| DB
+    AG -->|gera resposta| GHM
+    BI -->|consulta histórico| DB
+    OPS -->|monitora logs e falhas| GHA
